@@ -8,6 +8,10 @@ Engines, picked by the "voice" field in script.json:
   "en-US-AndrewNeural" (any edge-tts name)   needs `pip install edge-tts` and internet; an unofficial client, so it can break
   "kokoro:am_michael"                        offline; needs `pip install kokoro-onnx` and the two model files from the
                                              kokoro-onnx releases page in ~/.cache/stickman-explainer/kokoro/
+  "pocket:alba" or "pocket:voices/me.wav"    offline on CPU (Kyutai Pocket TTS): a catalog voice, or copy the voice in a
+                                             10 s clip; runs in its own environment, see references/voices.md
+  "nano:voices/me.wav"                       offline on CPU (Chatterbox Nano): copies the voice in a 10 s clip; also in
+                                             its own environment, see references/voices.md
 
 Lines are joined into sentences (a line that ends in . ? or ! closes one) and each sentence is spoken in one go, so a
 sentence split over several lines (several cuts) still sounds natural. Run time_words.py afterwards for the timings.
@@ -17,7 +21,9 @@ from pathlib import Path
 import numpy as np
 
 SR = 24000
-KOKORO_DIR = Path.home() / '.cache' / 'stickman-explainer' / 'kokoro'
+CACHE = Path.home() / '.cache' / 'stickman-explainer'
+KOKORO_DIR = CACHE / 'kokoro'
+LOCAL = {'pocket': 'pocket-env', 'nano': 'nano-env'}   # engines that run in their own venv under CACHE, through tts_local.py
 VOICES = {
     'en-US-AndrewNeural': 'edge-tts, US male, warm and steady',
     'en-US-BrianNeural': 'edge-tts, US male, casual',
@@ -26,12 +32,16 @@ VOICES = {
     'kokoro:am_michael': 'kokoro, US male, explainer',
     'kokoro:af_heart': 'kokoro, US female, warm',
     'kokoro:bm_george': 'kokoro, UK male, documentary',
+    'pocket:alba': 'pocket, catalog voice (others: michael, george, jean, marius, ...)',
+    'pocket:voices/me.wav': 'pocket, your own voice from a 10 s clip',
+    'nano:voices/me.wav': 'chatterbox nano, your own voice from a 10 s clip',
 }
 
 
-def decode(path):
-    """any audio file -> mono float32 at SR, through ffmpeg"""
-    raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', str(path), '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'],
+def decode(path, tempo=1.0):
+    """any audio file -> mono float32 at SR, through ffmpeg (tempo speeds it up without changing the pitch)"""
+    speed = ['-af', f'atempo={tempo:.3f}'] if abs(tempo - 1) > 1e-3 else []
+    raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', str(path), *speed, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'],
                          capture_output=True, check=True).stdout
     return np.frombuffer(raw, dtype=np.float32).astype(np.float64)
 
@@ -57,6 +67,30 @@ def sentences(lines):
         cur.append(i)
         if re.search(r'[.?!]["\')]*\s*$', ln['say'].strip()) or i == len(lines) - 1: out.append(cur); cur = []
     return out
+
+
+def env_python(engine):
+    env = CACHE / LOCAL[engine]
+    py = next((p for p in (env / 'Scripts' / 'python.exe', env / 'bin' / 'python') if p.exists()), None)
+    if not py: sys.exit(f'{engine} voice chosen but {env} does not exist: set it up as references/voices.md says')
+    return py
+
+
+def speak_local(engine, voice, rate, texts, project):
+    """run every sentence through tts_local.py in the engine's own environment, loading the model once"""
+    if voice.lower().endswith(('.wav', '.mp3', '.m4a', '.flac')):
+        ref = (project / voice).resolve()
+        if not ref.exists(): sys.exit(f'voice clip {ref} not found: record 10 s of clean speech there')
+        voice = str(ref)
+    elif engine == 'nano':
+        sys.exit('nano needs a voice clip, for example "nano:voices/me.wav"')
+    tempo = 1 + int(re.sub(r'[^-\d]', '', rate) or 0) / 100
+    with tempfile.TemporaryDirectory() as d:
+        job = Path(d) / 'sentences.json'; job.write_text(json.dumps(texts), encoding='utf-8')
+        worker = Path(__file__).with_name('tts_local.py')
+        if subprocess.run([str(env_python(engine)), '-I', str(worker), engine, voice, str(job), d]).returncode:
+            sys.exit(f'{engine} failed, see the message above')
+        return [decode(Path(d) / f'{i:03d}.wav', tempo) for i in range(len(texts))]
 
 
 def speaker(voice, rate):
@@ -111,12 +145,18 @@ def main():
         (P / 'voice' / 'sentences.json').unlink(missing_ok=True)
         print(f'{out}: own recording, {len(decode(a.audio)) / SR:.2f} s'); return
 
-    say = speaker(S.get('voice', 'en-US-AndrewNeural'), S.get('rate', '+0%'))
+    voice, rate = S.get('voice', 'en-US-AndrewNeural'), S.get('rate', '+0%')
+    groups = sentences(S['lines'])
+    texts = [' '.join(S['lines'][i]['say'].strip() for i in group) for group in groups]
+    engine = voice.split(':', 1)[0]
+    if engine in LOCAL:
+        spoken = speak_local(engine, voice.split(':', 1)[1], rate, texts, P)
+    else:
+        say = speaker(voice, rate); spoken = (say(text) for text in texts)
     lead, tail, pause = float(S.get('lead', 0.4)), float(S.get('tail', 1.0)), float(S.get('pause', 0.3))
     parts, marks, t = [np.zeros(int(lead * SR))], [], lead
-    for group in sentences(S['lines']):
-        text = ' '.join(S['lines'][i]['say'].strip() for i in group)
-        x = trim(say(text)); parts.append(x)
+    for group, text, x in zip(groups, texts, spoken):
+        x = trim(x); parts.append(x)
         marks.append({'lines': group, 'start': round(t, 3), 'end': round(t + len(x) / SR, 3)})
         gap = float(S['lines'][group[-1]].get('pause', pause)); t += len(x) / SR + gap
         parts.append(np.zeros(int(gap * SR)))

@@ -10,7 +10,7 @@ Do the Three.js setup in [threejs-route.md](threejs-route.md) first, then add th
 pip install numpy edge-tts faster-whisper
 ```
 
-Whisper downloads its model the first time it runs (base.en is about 150 MB, small.en about 500 MB). For an offline voice, install `kokoro-onnx` and put its two model files where `scripts/narrate.py` says.
+Whisper downloads its model the first time it runs (base.en is about 150 MB, small.en about 500 MB). For an offline voice, or to narrate in the user's own voice from a short clip, set up Pocket TTS or Chatterbox Nano as [voices.md](voices.md) says.
 
 ## Pick a look
 
@@ -43,7 +43,7 @@ New topics often need a new prop or set. Add it to the shot's `draw(g, lt, d, t)
    python <skill>/scripts/time_words.py . --model base.en
    ```
 
-   For the user's own recording, run `narrate.py . --audio their_take.m4a` and then `time_words.py`. For a captions-only video with no voice, run `time_words.py . --estimate`. Read `timing.txt` and check that the words follow the speech.
+   To pick or copy a voice, set `voice` in `script.json` as [voices.md](voices.md) shows. For the user's own full recording, run `narrate.py . --audio their_take.m4a` and then `time_words.py`. For a captions-only video with no voice, run `time_words.py . --estimate`. Read `timing.txt` and check that the words follow the speech.
 5. **Shots.** Copy `assets/short-scene.js`, `assets/shorts-kit.js`, and `assets/characters.js` into the project, then edit `LOOK`, `HERO`, and `SHOTS` (one entry per line). Put each card's entrance on its word with `on`, so the X lands on "wandering" rather than somewhere near it.
 6. **Stills**, then fix what they show:
 

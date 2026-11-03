@@ -24,7 +24,7 @@ Three.js route:
 - Node.js, ffmpeg, and these packages in your project: `three`, `playwright`, `topojson-client`, `world-atlas`
 - No paid plan or Google account
 
-Shorts route: the Three.js requirements, plus Python with `numpy`, `edge-tts`, and `faster-whisper`
+Shorts route: the Three.js requirements, plus Python with `numpy`, `edge-tts`, and `faster-whisper`; optionally Pocket TTS or Chatterbox Nano for an offline voice or a copy of your own voice (see `references/voices.md`)
 
 ## Use
 
@@ -38,7 +38,7 @@ The agent never types your password, and it stops if Google asks for a login, bi
 
 ## Status
 
-The Vids workflow comes from one real test video made in October 2026, and Vids changes often, so `skills/stickman-explainer-videos/references/vids-notes.md` may go out of date. The Three.js map route produced a full test video. The Shorts route produced a full 22-second test Short in the `steps` look; the other four looks have only been checked in stills, and the offline Kokoro voice has not been tested.
+The Vids workflow comes from one real test video made in October 2026, and Vids changes often, so `skills/stickman-explainer-videos/references/vids-notes.md` may go out of date. The Three.js map route produced a full test video. The Shorts route produced a full 22-second test Short in the `steps` look; the other four looks have only been checked in stills, and the offline Kokoro voice has not been tested. Pocket TTS (catalog voice) and Chatterbox Nano (copying a voice from a clip) both produced a clean test narration on CPU; copying a voice with Pocket needs its gated weights and has not been tested yet.
 
 ## Contributing
 

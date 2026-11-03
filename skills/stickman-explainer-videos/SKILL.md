@@ -21,6 +21,8 @@ If the user does not want to pay, or Vids runs out of quota, use Three.js. It co
 
 If the `aitrends-2d-studio` plugin is installed, you may use it for characters and shots instead. It is optional, as this skill does not include it.
 
+On the Three.js and Shorts routes the narration is free: an online voice, an offline CPU voice, or the user's own voice copied from a 10-second clip with Pocket TTS or Chatterbox Nano. When the user wants their own voice, read [references/voices.md](references/voices.md).
+
 Follow sections 1, 5, and 6 on the Vids and Three.js routes. Sections 2 to 4 are for Vids; for Three.js, read [references/threejs-route.md](references/threejs-route.md) instead. The Shorts route has its own script rules, checks, and delivery steps in [references/shorts.md](references/shorts.md), which replace sections 1, 5, and 6.
 
 ## Ground rules
