@@ -58,7 +58,7 @@ Copy `assets/characters.js` beside your scene. `assets/character-scene.js` is a 
 
 ## Free voice
 
-`edge-tts` is free to use but is an unofficial client for a Microsoft service, so it can stop working without notice. A recording of the user's own voice is the safest free option.
+`edge-tts` is free to use but is an unofficial client for a Microsoft service, so it can stop working without notice. A recording of the user's own voice is the safest free option. `scripts/narrate.py`, `scripts/time_words.py`, and `scripts/mix_audio.py` from the [Shorts route](shorts.md) also work for landscape videos: they make the narration, time every word, and build a soundtrack with generated music and effects.
 
 ## Maps
 

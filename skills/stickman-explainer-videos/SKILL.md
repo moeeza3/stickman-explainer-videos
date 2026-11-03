@@ -1,11 +1,11 @@
 ---
-name: explainer-video-maker
-description: Produce a short narrated explainer video from a topic, choosing between Google Vids AI clips for cartoon scenes and a local Three.js render for maps, timelines, and diagrams. Use this whenever the user wants a history or science explainer, a map documentary, a faceless YouTube story video, a cartoon video with a recurring character, or an animated route or timeline, even if they only give a topic and never name a tool.
+name: stickman-explainer-videos
+description: Make narrated stickman and cartoon explainer videos from a topic, as long landscape explainers or vertical 9:16 Shorts with word-synced captions, choosing between Google Vids AI clips and free local Three.js rendering with stick-figure characters, maps, and generated sound. Use this whenever the user wants a history or science explainer, a map documentary, a faceless YouTube video, a YouTube Short, TikTok or Reel, a "what would you do if" or "what happens if" video, a mystery or true story short, a cartoon with a recurring character, or an animated route or timeline, even if they only give a topic and never name a tool.
 ---
 
-# Explainer Video Maker
+# Stickman Explainer Videos
 
-Turn one topic into a finished 40-90 second narrated explainer. The script comes first on both routes, then the visuals are made in whichever tool suits them.
+Turn one topic into a finished narrated video: a 40-90 second landscape explainer or a 20-60 second vertical Short. The script comes first on every route, then the visuals are made in whichever tool suits them.
 
 ## Choose the route
 
@@ -13,14 +13,15 @@ Turn one topic into a finished 40-90 second narrated explainer. The script comes
 | --- | --- | --- |
 | **Google Vids** | Richly illustrated scenes, places, and mood that would take too long to draw | Limited AI generations, and paid plans give more; text and geography come out unreliable |
 | **Three.js** | Maps, routes, timelines, charts, and diagrams with exact labels and dates, plus simple cartoon characters | Free, with no account or quota, but every animation is built by code and full renders are slow |
+| **Shorts** | A vertical 9:16 short with stick figures, cards, word-by-word captions, voice, music, and sound effects, in one of five looks | Free and local, using the Three.js renderer; read [references/shorts.md](references/shorts.md) |
 
-Decide from the content and tell the user which route you chose and why. If they name a tool, use it. If a video needs both, build the map and diagram shots in Three.js, generate the cartoon shots in Vids, and join them with ffmpeg or in Vids.
+Decide from the content and tell the user which route you chose and why. A request for a Short, TikTok, Reel, or anything vertical goes to the Shorts route. If they name a tool, use it. If a video needs both, build the map and diagram shots in Three.js, generate the cartoon shots in Vids, and join them with ffmpeg or in Vids.
 
 If the user does not want to pay, or Vids runs out of quota, use Three.js. It covers characters too: `assets/characters.js` draws stick figures with moods, poses, walking, hats, and talking mouths, and `assets/character-scene.js` puts one on a painted backdrop with speech bubbles and captions. Tell the user the look is simpler than AI clips, with flatter backgrounds and movement limited to what the code draws.
 
 If the `aitrends-2d-studio` plugin is installed, you may use it for characters and shots instead. It is optional, as this skill does not include it.
 
-Follow sections 1, 5, and 6 on every route. Sections 2 to 4 are for Vids; for Three.js, read [references/threejs-route.md](references/threejs-route.md) instead.
+Follow sections 1, 5, and 6 on the Vids and Three.js routes. Sections 2 to 4 are for Vids; for Three.js, read [references/threejs-route.md](references/threejs-route.md) instead. The Shorts route has its own script rules, checks, and delivery steps in [references/shorts.md](references/shorts.md), which replace sections 1, 5, and 6.
 
 ## Ground rules
 

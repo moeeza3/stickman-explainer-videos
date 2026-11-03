@@ -1,0 +1,25 @@
+{
+  "title": "What If You Got Lost In A Forest?",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+4%",
+  "lead": 0.35,
+  "tail": 1.0,
+  "pause": 0.28,
+  "music": "soft",
+  "cut_sound": "whoosh",
+  "sources": [
+    "US Forest Service and National Park Service lost-hiker guidance: stop, stay where you are, and signal; staying put makes you easier to find",
+    "Three blasts of a whistle is the widely taught distress signal (Scouting and park safety guidance)"
+  ],
+  "lines": [
+    { "say": "What would you do if you got lost in a forest?", "cap": "What would [you] do / if you got [lost]?" },
+    { "say": "The sun is going down, and every tree looks the same.", "cap": "The sun is [going down] / every tree / looks the [same]" },
+    { "say": "Step one: stop walking.", "cap": "Step [one] / stop [walking]", "sfx": [{ "on": "one", "type": "pop" }] },
+    { "say": "Wandering around makes you much harder to find,", "cap": "[Wandering] around / makes you harder / to [find]", "sfx": [{ "on": "wander", "type": "thud" }] },
+    { "say": "so stay right where you are.", "cap": "so [stay] / right where / you [are]", "sfx": [{ "on": "stay", "type": "ding" }] },
+    { "say": "Step two: be loud and bright.", "cap": "Step [two] / be [loud] / and [bright]", "sfx": [{ "on": "two", "type": "pop" }] },
+    { "say": "Three blasts on a whistle is the classic call for help.", "cap": "[Three] blasts / on a whistle / call for [help]", "sfx": [{ "on": "three", "type": "pop" }] },
+    { "say": "Step three: keep warm, and wait.", "cap": "Step [three] / keep [warm] / and [wait]", "sfx": [{ "on": "three", "type": "pop" }] },
+    { "say": "Searchers find people who stay put.", "cap": "Searchers find / people who / stay [put]", "sfx": [{ "on": "stay", "type": "ding" }] }
+  ]
+}
