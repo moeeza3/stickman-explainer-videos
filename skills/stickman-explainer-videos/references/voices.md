@@ -29,37 +29,43 @@ Then set `"voice": "pocket:voices/me.wav"` or `"voice": "nano:voices/me.wav"` an
 
 ## Setup
 
-Both models need PyTorch, and they need different versions of it, so each lives in its own environment under `~/.cache/stickman-explainer/`. `narrate.py` finds them there and runs `scripts/tts_local.py` inside them. The commands below are for Windows; on macOS or Linux use `bin/python` in place of `Scripts/python`.
+Both models need PyTorch, and they need different versions of it, so each gets its own folder with its own environment (`env`) and its downloaded models (`models`):
+
+```
+<tools>/
+  pocket-tts/       env/  models/
+  chatterbox-nano/  env/  models/
+```
+
+`<tools>` is `~/.cache/stickman-explainer` unless the `STICKMAN_TTS_DIR` environment variable names another folder, such as `D:/tools`. `narrate.py` runs `scripts/tts_local.py` inside the right `env` and points the Hugging Face cache at that tool's `models`, so the first run downloads there (about 0.2 GB for Pocket, 3 GB for Nano). The commands below use `~/.cache/stickman-explainer` on Windows; replace it with your folder, and on macOS or Linux use `bin/python` in place of `Scripts/python`.
 
 Pocket TTS:
 
 ```bash
-python -m venv ~/.cache/stickman-explainer/pocket-env
+python -m venv ~/.cache/stickman-explainer/pocket-tts/env
 ```
 
 ```bash
-~/.cache/stickman-explainer/pocket-env/Scripts/python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+~/.cache/stickman-explainer/pocket-tts/env/Scripts/python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
 ```
 
 ```bash
-~/.cache/stickman-explainer/pocket-env/Scripts/python -m pip install pocket-tts
+~/.cache/stickman-explainer/pocket-tts/env/Scripts/python -m pip install pocket-tts
 ```
 
 Chatterbox Nano (it is only in the GitHub source so far, not in the `chatterbox-tts` release on PyPI):
 
 ```bash
-python -m venv ~/.cache/stickman-explainer/nano-env
+python -m venv ~/.cache/stickman-explainer/chatterbox-nano/env
 ```
 
 ```bash
-~/.cache/stickman-explainer/nano-env/Scripts/python -m pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+~/.cache/stickman-explainer/chatterbox-nano/env/Scripts/python -m pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cpu
 ```
 
 ```bash
-~/.cache/stickman-explainer/nano-env/Scripts/python -m pip install "chatterbox-tts @ https://github.com/resemble-ai/chatterbox/archive/refs/heads/master.zip"
+~/.cache/stickman-explainer/chatterbox-nano/env/Scripts/python -m pip install "chatterbox-tts @ https://github.com/resemble-ai/chatterbox/archive/refs/heads/master.zip"
 ```
-
-The first run of each downloads its model to the Hugging Face cache.
 
 ### Pocket's gated weights
 
@@ -67,6 +73,6 @@ Pocket's catalog voices download freely, but the weights that copy a voice sit b
 
 1. Sign in at huggingface.co and accept the terms on [kyutai/pocket-tts](https://huggingface.co/kyutai/pocket-tts).
 2. Make a read token in Settings, Access Tokens.
-3. Run `~/.cache/stickman-explainer/pocket-env/Scripts/hf auth login` and paste it. The token is stored for the whole computer.
+3. Run `~/.cache/stickman-explainer/pocket-tts/env/Scripts/hf auth login` and paste it. The token is stored for the whole computer.
 
 Until then, `narrate.py` stops with a message that links the terms page. Do not use re-uploads of the gated weights by other accounts.

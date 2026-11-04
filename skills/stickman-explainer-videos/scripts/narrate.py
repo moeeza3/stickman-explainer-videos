@@ -16,14 +16,16 @@ Engines, picked by the "voice" field in script.json:
 Lines are joined into sentences (a line that ends in . ? or ! closes one) and each sentence is spoken in one go, so a
 sentence split over several lines (several cuts) still sounds natural. Run time_words.py afterwards for the timings.
 """
-import argparse, asyncio, json, re, subprocess, sys, tempfile, time, wave
+import argparse, asyncio, json, os, re, subprocess, sys, tempfile, time, wave
 from pathlib import Path
 import numpy as np
 
 SR = 24000
 CACHE = Path.home() / '.cache' / 'stickman-explainer'
 KOKORO_DIR = CACHE / 'kokoro'
-LOCAL = {'pocket': 'pocket-env', 'nano': 'nano-env'}   # engines that run in their own venv under CACHE, through tts_local.py
+# engines that run through tts_local.py, each in TOOLS/<folder>/env with its downloaded models in TOOLS/<folder>/models
+TOOLS = Path(os.environ.get('STICKMAN_TTS_DIR') or CACHE)
+LOCAL = {'pocket': 'pocket-tts', 'nano': 'chatterbox-nano'}
 VOICES = {
     'en-US-AndrewNeural': 'edge-tts, US male, warm and steady',
     'en-US-BrianNeural': 'edge-tts, US male, casual',
@@ -70,7 +72,7 @@ def sentences(lines):
 
 
 def env_python(engine):
-    env = CACHE / LOCAL[engine]
+    env = TOOLS / LOCAL[engine] / 'env'
     py = next((p for p in (env / 'Scripts' / 'python.exe', env / 'bin' / 'python') if p.exists()), None)
     if not py: sys.exit(f'{engine} voice chosen but {env} does not exist: set it up as references/voices.md says')
     return py
@@ -88,7 +90,9 @@ def speak_local(engine, voice, rate, texts, project):
     with tempfile.TemporaryDirectory() as d:
         job = Path(d) / 'sentences.json'; job.write_text(json.dumps(texts), encoding='utf-8')
         worker = Path(__file__).with_name('tts_local.py')
-        if subprocess.run([str(env_python(engine)), '-I', str(worker), engine, voice, str(job), d]).returncode:
+        models = TOOLS / LOCAL[engine] / 'models'   # keep each tool's downloads next to it
+        run_env = {**os.environ, 'HF_HUB_CACHE': str(models)}
+        if subprocess.run([str(env_python(engine)), '-I', str(worker), engine, voice, str(job), d], env=run_env).returncode:
             sys.exit(f'{engine} failed, see the message above')
         return [decode(Path(d) / f'{i:03d}.wav', tempo) for i in range(len(texts))]
 
